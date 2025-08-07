@@ -12,7 +12,7 @@ wss.on("connection", (socket: WebSocket) => {
     const data = JSON.parse(message.toString());
     if (data.back_type === "join") {
       const room_id = data.room;
-      roomToPerson.set(room_id, [...(roomToPerson.get(room_id) || []), socket]);
+      roomToPerson.get(room_id)?.push(socket);
     }
     if (data.back_type === "leave") {
       const room_id = data.room;
@@ -27,7 +27,6 @@ wss.on("connection", (socket: WebSocket) => {
       const currentClients = roomToPerson.get(room_id) || [];
       currentClients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
-          // console.log(message.toString());
           client.send(message.toString());
         }
       });
