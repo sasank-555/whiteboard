@@ -72,7 +72,7 @@ export default function WhiteboardApp() {
   ];
 
   useEffect(() => {
-    const wss = new WebSocket("ws://localhost:8080/ws");
+    const wss = new WebSocket("ws://whiteboard-dhq8.onrender.com/");
     setSocket(wss);
 
     wss.onmessage = (event) => {
