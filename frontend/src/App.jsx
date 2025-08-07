@@ -514,7 +514,7 @@ export default function WhiteboardApp() {
         {/* Brush Size */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => adjustBrushSize(-2)}
+            onClick={() => adjustBrushSize(2)}
             className="p-1 rounded hover:bg-gray-100"
             title="Decrease brush size"
           >
