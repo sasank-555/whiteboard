@@ -542,6 +542,13 @@ export default function WhiteboardApp() {
           </button>
         </div>
 
+        {/* Room Info */}
+        <div className="flex-1 text-center text-gray-700">
+          <span className="font-semibold">Room ID: {roomId}</span>
+          <span className="ml-2 text-sm text-gray-500">
+            {socket ? "Connected" : "Disconnected"}
+          </span>
+        </div>
         {/* Actions */}
         <div className="flex gap-2 ml-auto">
           <button
