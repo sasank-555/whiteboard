@@ -6,6 +6,8 @@ import {
   Download,
   Minus,
   Plus,
+  Users,
+  LogOut,
 } from "lucide-react";
 
 export default function WhiteboardApp() {
@@ -14,11 +16,47 @@ export default function WhiteboardApp() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [tool, setTool] = useState("pen");
   const [color, setColor] = useState("#000000");
-  const [brushSize, setBrushSize] = useState(2);
+  const [brushSize, setBrushSize] = useState(8);
   const [strokes, setStrokes] = useState([]);
   const [currentStroke, setCurrentStroke] = useState([]);
   const [currentStrokeId, setCurrentStrokeId] = useState(null);
-
+  const [inRoom, setInRoom] = useState(false);
+  const [roomInput, setRoomInput] = useState("");
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [roomId, setRoomId] = useState("");
+  const handleRoomSubmit = (e) => {
+    e.preventDefault();
+    if (!roomInput.trim()) return;
+    setIsConnecting(true);
+    setRoomId(roomInput.trim());
+    setInRoom(true);
+    setIsConnecting(false);
+    setRoomInput("");
+    if (socket) {
+      socket.send(
+        JSON.stringify({
+          back_type: "join",
+          room: roomInput.trim(),
+        })
+      );
+    }
+  };
+  const leaveRoom = () => {
+    if (socket) {
+      socket.send(
+        JSON.stringify({
+          back_type: "leave",
+          room: roomId,
+        })
+      );
+      socket.close();
+    }
+    setInRoom(false);
+    setStrokes([]);
+    setCurrentStroke([]);
+    setCurrentStrokeId(null);
+    setSocket(null);
+  };
   const colors = [
     "#000000",
     "#FF0000",
@@ -33,7 +71,6 @@ export default function WhiteboardApp() {
   ];
 
   useEffect(() => {
-    const canvas = canvasRef.current;
     const wss = new WebSocket("ws://localhost:8080/ws");
     setSocket(wss);
 
@@ -65,7 +102,6 @@ export default function WhiteboardApp() {
       }
 
       if (data.type === "draw_continue") {
-        // Add point to existing stroke
         setStrokes((prevStrokes) =>
           prevStrokes.map((stroke) =>
             stroke.id === data.strokeId
@@ -76,7 +112,6 @@ export default function WhiteboardApp() {
         return;
       }
 
-      // Legacy support for complete stroke data
       if (data.type === "draw") {
         const strokeObj =
           typeof data.stroke === "string"
@@ -85,7 +120,10 @@ export default function WhiteboardApp() {
         setStrokes((prevStrokes) => [...prevStrokes, strokeObj]);
       }
     };
-
+  }, []);
+  useEffect(() => {
+    if (!inRoom) return;
+    const canvas = canvasRef.current;
     const resizeCanvas = () => {
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width;
@@ -100,12 +138,11 @@ export default function WhiteboardApp() {
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      wss.close();
     };
-  }, []);
+  }, [inRoom]);
 
   useEffect(() => {
-    redrawCanvas();
+    if (inRoom) redrawCanvas();
   }, [strokes]);
 
   const redrawCanvas = () => {
@@ -231,8 +268,10 @@ export default function WhiteboardApp() {
         if (socket) {
           socket.send(
             JSON.stringify({
+              back_type: "send_message",
               type: "erase",
               stroke: strokes[strokeIndex].id,
+              room: roomId,
             })
           );
         }
@@ -258,10 +297,12 @@ export default function WhiteboardApp() {
       socket.send(
         JSON.stringify({
           type: "draw_start",
+          back_type: "send_message",
           strokeId: strokeId,
           point: pos,
           color: color,
           brushSize: brushSize,
+          room: roomId,
         })
       );
     }
@@ -280,8 +321,10 @@ export default function WhiteboardApp() {
       socket.send(
         JSON.stringify({
           type: "draw_continue",
+          back_type: "send_message",
           strokeId: currentStrokeId,
           point: pos,
+          room: roomId,
         })
       );
     }
@@ -338,6 +381,8 @@ export default function WhiteboardApp() {
       socket.send(
         JSON.stringify({
           type: "clear",
+          back_type: "send_message",
+          room: roomId,
         })
       );
     }
@@ -356,6 +401,67 @@ export default function WhiteboardApp() {
   const adjustBrushSize = (delta) => {
     setBrushSize((prev) => Math.max(1, Math.min(50, prev + delta)));
   };
+  if (!inRoom) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full mx-4">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+              <Users className="w-8 h-8 text-blue-600" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Collaborative Whiteboard
+            </h1>
+            <p className="text-gray-600">
+              Enter a room ID to join or create a whiteboard session
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Room ID
+              </label>
+              <input
+                type="text"
+                value={roomInput}
+                onChange={(e) => setRoomInput(e.target.value)}
+                placeholder="Enter room ID (e.g., room123)"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                disabled={isConnecting}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleRoomSubmit(e);
+                  }
+                }}
+              />
+            </div>
+
+            <button
+              onClick={handleRoomSubmit}
+              disabled={!roomInput.trim() || isConnecting}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            >
+              {isConnecting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                  Connecting...
+                </span>
+              ) : (
+                "Join Room"
+              )}
+            </button>
+
+            <div className="text-center text-sm text-gray-500">
+              <p>
+                Share the same Room ID with others to collaborate in real-time!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
@@ -452,6 +558,13 @@ export default function WhiteboardApp() {
           >
             <Download size={16} />
             Download
+          </button>
+          <button
+            onClick={leaveRoom}
+            className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            title="Leave Room"
+          >
+            Leave Room
           </button>
         </div>
       </div>
