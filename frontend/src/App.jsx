@@ -55,7 +55,6 @@ export default function WhiteboardApp() {
     setStrokes([]);
     setCurrentStroke([]);
     setCurrentStrokeId(null);
-    setSocket(null);
   };
   const colors = [
     "#000000",
