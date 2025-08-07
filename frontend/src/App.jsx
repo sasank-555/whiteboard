@@ -8,6 +8,7 @@ import {
   Plus,
   Users,
   LogOut,
+  MousePointer2,
 } from "lucide-react";
 
 export default function WhiteboardApp() {
@@ -545,7 +546,7 @@ export default function WhiteboardApp() {
         <div className="flex gap-2 ml-auto">
           <button
             onClick={clearCanvas}
-            className="flex items-center gap-2 px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 bg-gray-800 text-white rounded-lg hover:bg-black transition-colors"
             title="Clear Canvas"
           >
             <RotateCcw size={16} />
@@ -579,8 +580,8 @@ export default function WhiteboardApp() {
             touchAction: "none",
             cursor:
               tool === "pen"
-                ? "crosshair"
-                : "url(\"data:image/svg+xml,%3csvg width='24' height='24' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828L13.5 10.207 9.793 6.5l1.293-1.293a1 1 0 0 0 0-1.414L8.086 2.207Z M7.5 7.914l3.793 3.793-9.293 9.293H0v-2L7.5 7.914Z' fill='%23000'/%3e%3c/svg%3e\") 12 12, auto",
+                ? 'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJibGFjayI+PHBhdGggZD0iTTEyLjU4NiAxMi41ODYgMTkgMTkiLz48cGF0aCBkPSJNMy42ODkgMy4wMzdhLjQ5Ny40OTcgMCAwIDAtLjY1MS42NTFsNi41IDE2YS41LjUgMCAwIDAgLjk0Ny0uMDYybDEuNTY5LTYuMDgzYTIgMiAwIDAgMSAxLjQ0OC0xLjQ3OWw2LjEyNC0xLjU3OWEuNS41IDAgMCAwIC4wNjMtLjk0N3oiLz48L3N2Zz4=") 2 2, auto'
+                : 'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMS4yNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1lcmFzZXItaWNvbiBsdWNpZGUtZXJhc2VyIj48cGF0aCBkPSJNMjEgMjFIOGEyIDIgMCAwIDEtMS40Mi0uNTg3bC0zLjk5NC0zLjk5OWEyIDIgMCAwIDEgMC0yLjgyOGwxMC0xMGEyIDIgMCAwIDEgMi44MjkgMGw1Ljk5OSA2YTIgMiAwIDAgMSAwIDIuODI4TDEyLjgzNCAyMSIvPjxwYXRoIGQ9Im01LjA4MiAxMS4wOSA4LjgyOCA4LjgyOCIvPjwvc3ZnPg==") 2 2, auto',
           }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
