@@ -72,7 +72,7 @@ export default function WhiteboardApp() {
   ];
 
   useEffect(() => {
-    const wss = new WebSocket("https://whiteboard-dhq8.onrender.com");
+    const wss = new WebSocket("wss://whiteboard-dhq8.onrender.com");
     setSocket(wss);
 
     wss.onmessage = (event) => {
@@ -514,7 +514,7 @@ export default function WhiteboardApp() {
         {/* Brush Size */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => adjustBrushSize(2)}
+            onClick={() => adjustBrushSize(-2)}
             className="p-1 rounded hover:bg-gray-100"
             title="Decrease brush size"
           >
@@ -540,10 +540,6 @@ export default function WhiteboardApp() {
           >
             <Plus size={16} />
           </button>
-        </div>
-
-        <div className="flex mx-auto items-center gap-2  text-black text-lg bg-gray-200 font-semibold rounded-md px-5 py-2">
-          Room ID : {roomId}
         </div>
 
         {/* Actions */}
