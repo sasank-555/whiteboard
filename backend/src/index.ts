@@ -36,5 +36,11 @@ wss.on("connection", (socket: WebSocket) => {
   socket.on("close", () => {
     console.log("Client disconnected");
     clients = clients.filter((client) => client !== socket);
+    roomToPerson.forEach((sockets, roomId) => {
+      roomToPerson.set(
+        roomId,
+        sockets.filter((client) => client !== socket)
+      );
+    });
   });
 });
