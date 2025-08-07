@@ -542,6 +542,10 @@ export default function WhiteboardApp() {
           </button>
         </div>
 
+        <div className="flex mx-auto items-center gap-2  text-black text-lg bg-gray-200 font-semibold rounded-md px-5 py-2">
+          Room ID : {roomId}
+        </div>
+
         {/* Actions */}
         <div className="flex gap-2 ml-auto">
           <button
