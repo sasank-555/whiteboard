@@ -564,6 +564,7 @@ export default function WhiteboardApp() {
             className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             title="Leave Room"
           >
+            <LogOut size={16} />
             Leave Room
           </button>
         </div>
