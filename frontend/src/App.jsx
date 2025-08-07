@@ -50,7 +50,6 @@ export default function WhiteboardApp() {
           room: roomId,
         })
       );
-      socket.close();
     }
     setInRoom(false);
     setStrokes([]);
